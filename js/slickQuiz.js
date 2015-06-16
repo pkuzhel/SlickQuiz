@@ -109,6 +109,9 @@
             $quizLevel             = $(_quizLevel)
         ;
 
+        console.log("quiz starter ID: " + _quizStarter);
+        console.log($quizStarter);
+
 
         // Reassign user-submitted deprecated options
         var depMsg = '';
@@ -199,6 +202,7 @@
         plugin.method = {
             // Sets up the questions and answers based on above array
             setupQuiz: function(options) { // use 'options' object to pass args
+                console.log("setting up quiz");
                 var key, keyNotch, kN;
                 key = internal.method.getKey (3); // how many notches == how many jQ animations you will run
                 keyNotch = internal.method.getKeyNotch; // a function that returns a jQ animation callback function
@@ -346,6 +350,7 @@
 
             // Starts the quiz (hides start button and displays first question)
             startQuiz: function(options) {
+                console.log("starting quiz!");
                 var key, keyNotch, kN;
                 key = internal.method.getKey (1); // how many notches == how many jQ animations you will run
                 keyNotch = internal.method.getKeyNotch; // a function that returns a jQ animation callback function
