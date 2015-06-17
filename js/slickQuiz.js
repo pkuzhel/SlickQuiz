@@ -115,6 +115,9 @@
 
         // Reassign user-submitted deprecated options
         var depMsg = '';
+		
+		// Allowing for remidiation messaging
+		var remidiation = [];
 
         if (options && typeof options.disableNext != 'undefined') {
             if (typeof options.preventUnanswered == 'undefined') {
@@ -469,9 +472,63 @@
                 var correctResponse = plugin.method.compareAnswers(trueAnswers, selectedAnswers, selectAny);
 
                 if (correctResponse) {
+
+                    remidiation = [];
+                    var singleRemidiation = '';
+
+                    for (i in selectedAnswers) {
+
+
+                        if (answers.hasOwnProperty(selectedAnswers[i])) {
+
+                            var answer = answers[selectedAnswers[i]],
+                                index = parseInt(selectedAnswers[i], 10);
+
+                            singleRemidiation = answer.reason;
+                            remidiation.push(singleRemidiation);
+                        }
+                    }
+                    for (i in remidiation) {
+                        var buttonQuestion = '#question' + questionIndex + ' > a.button.nextQuestion';
+                        var remidiationResponseHTML = $('<ul class="' + responsesClass + '"></ul>');
+                        remidiationResponseHTML.append('<li class="' + correctResponseClass + '">' + remidiation[i] + '</li>');
+                        $(buttonQuestion).before(remidiationResponseHTML);
+                    }
+
                     questionLI.addClass(correctClass);
                 } else {
+                    remidiation = [];
+                    var singleRemidiation = '';
+
+
+                    for (i in selectedAnswers) {
+
+
+
+                        if (answers.hasOwnProperty(selectedAnswers[i])) {
+
+
+
+                            var answer = answers[selectedAnswers[i]],
+                                index = parseInt(selectedAnswers[i], 10);
+
+                            singleRemidiation = answer.reason;
+                            remidiation.push(singleRemidiation);
+                        }
+                    }
+
+                    for (i in remidiation) {
+
+                        var buttonQuestion = '#question' + questionIndex + ' > a.button.nextQuestion';
+
+                        var remidiationResponseHTML = $('<ul class="' + responsesClass + '"></ul>');
+                        remidiationResponseHTML.append('<li class="' + incorrectResponseClass + '">' + remidiation[i] + '</li>');
+
+                        $(buttonQuestion).before(remidiationResponseHTML);
+                    }
+
                     questionLI.addClass(incorrectClass);
+
                 }
 
                 // Toggle appropriate response (either for display now and / or on completion)
