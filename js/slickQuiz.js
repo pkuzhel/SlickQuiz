@@ -484,8 +484,10 @@
                             var answer = answers[selectedAnswers[i]],
                                 index = parseInt(selectedAnswers[i], 10);
 
-                            singleRemidiation = answer.reason;
-                            remidiation.push(singleRemidiation);
+							if(answer.reason !== undefined || answer.reason != ''){
+                              singleRemidiation = answer.reason;
+                              remidiation.push(singleRemidiation);
+							}
                         }
                     }
                     for (i in remidiation) {
@@ -512,8 +514,10 @@
                             var answer = answers[selectedAnswers[i]],
                                 index = parseInt(selectedAnswers[i], 10);
 
-                            singleRemidiation = answer.reason;
-                            remidiation.push(singleRemidiation);
+							if(answer.reason !== undefined || answer.reason != ''){
+                              singleRemidiation = answer.reason;
+                              remidiation.push(singleRemidiation);
+							}
                         }
                     }
 
