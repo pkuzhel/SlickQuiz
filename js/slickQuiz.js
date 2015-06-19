@@ -484,7 +484,7 @@
                             var answer = answers[selectedAnswers[i]],
                                 index = parseInt(selectedAnswers[i], 10);
 
-							if(answer.reason != undefined){
+							if(answer.reason !== undefined || answer.reason != ''){
                               singleRemidiation = answer.reason;
                               remidiation.push(singleRemidiation);
 							}
@@ -514,7 +514,7 @@
                             var answer = answers[selectedAnswers[i]],
                                 index = parseInt(selectedAnswers[i], 10);
 
-							if(answer.reason != undefined){
+							if(answer.reason !== undefined || answer.reason != ''){
                               singleRemidiation = answer.reason;
                               remidiation.push(singleRemidiation);
 							}
