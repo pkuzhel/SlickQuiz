@@ -31,7 +31,7 @@
                 numberOfQuestions: null,
                 randomSortQuestions: false,
                 randomSortAnswers: false,
-                preventUnanswered: false,
+                preventUnanswered: false,	// set true for student to be alerted for unanswered questions
                 disableScore: false,
                 disableRanking: false,
                 scoreAsPercentage: false,
@@ -47,7 +47,8 @@
                     checkAnswer: function () {},
                     nextQuestion: function () {},
                     backToQuestion: function () {},
-                    completeQuiz: function () {}
+                    completeQuiz: function () {},
+					disappearOptions: function () {}
                 },
                 events: {
                     onStartQuiz: function (options) {},
@@ -109,15 +110,9 @@
             $quizLevel             = $(_quizLevel)
         ;
 
-        console.log("quiz starter ID: " + _quizStarter);
-        console.log($quizStarter);
-
 
         // Reassign user-submitted deprecated options
         var depMsg = '';
-		
-		// Allowing for remidiation messaging
-		var remidiation = [];
 
         if (options && typeof options.disableNext != 'undefined') {
             if (typeof options.preventUnanswered == 'undefined') {
@@ -205,7 +200,6 @@
         plugin.method = {
             // Sets up the questions and answers based on above array
             setupQuiz: function(options) { // use 'options' object to pass args
-                console.log("setting up quiz");
                 var key, keyNotch, kN;
                 key = internal.method.getKey (3); // how many notches == how many jQ animations you will run
                 keyNotch = internal.method.getKeyNotch; // a function that returns a jQ animation callback function
@@ -353,7 +347,6 @@
 
             // Starts the quiz (hides start button and displays first question)
             startQuiz: function(options) {
-                console.log("starting quiz!");
                 var key, keyNotch, kN;
                 key = internal.method.getKey (1); // how many notches == how many jQ animations you will run
                 keyNotch = internal.method.getKeyNotch; // a function that returns a jQ animation callback function
@@ -472,67 +465,24 @@
                 var correctResponse = plugin.method.compareAnswers(trueAnswers, selectedAnswers, selectAny);
 
                 if (correctResponse) {
-
-                    remidiation = [];
-                    var singleRemidiation = '';
-
-                    for (i in selectedAnswers) {
-
-
-                        if (answers.hasOwnProperty(selectedAnswers[i])) {
-
-                            var answer = answers[selectedAnswers[i]],
-                                index = parseInt(selectedAnswers[i], 10);
-
-							if(answer.reason !== undefined || answer.reason != ''){
-                              singleRemidiation = answer.reason;
-                              remidiation.push(singleRemidiation);
-							}
-                        }
-                    }
-                    for (i in remidiation) {
-                        var buttonQuestion = '#question' + questionIndex + ' > a.button.nextQuestion';
-                        var remidiationResponseHTML = $('<ul class="' + responsesClass + '"></ul>');
-                        remidiationResponseHTML.append('<li class="' + correctResponseClass + '">' + remidiation[i] + '</li>');
-                        $(buttonQuestion).before(remidiationResponseHTML);
-                    }
-
+				
+					if(questions[questionIndex].onSuccess && typeof questions[questionIndex].onSuccess === 'function'){
+					
+						//"Firing callback"
+						questions[questionIndex].onSuccess(questionIndex, questions[questionIndex].a, correctResponseClass, responsesClass);
+					}
+				
+				
                     questionLI.addClass(correctClass);
                 } else {
-                    remidiation = [];
-                    var singleRemidiation = '';
-
-
-                    for (i in selectedAnswers) {
-
-
-
-                        if (answers.hasOwnProperty(selectedAnswers[i])) {
-
-
-
-                            var answer = answers[selectedAnswers[i]],
-                                index = parseInt(selectedAnswers[i], 10);
-
-							if(answer.reason !== undefined || answer.reason != ''){
-                              singleRemidiation = answer.reason;
-                              remidiation.push(singleRemidiation);
-							}
-                        }
-                    }
-
-                    for (i in remidiation) {
-
-                        var buttonQuestion = '#question' + questionIndex + ' > a.button.nextQuestion';
-
-                        var remidiationResponseHTML = $('<ul class="' + responsesClass + '"></ul>');
-                        remidiationResponseHTML.append('<li class="' + incorrectResponseClass + '">' + remidiation[i] + '</li>');
-
-                        $(buttonQuestion).before(remidiationResponseHTML);
-                    }
-
+				
+					if(questions[questionIndex].onFail && typeof questions[questionIndex].onFail === 'function'){
+					
+						//"Firing callback"
+						questions[questionIndex].onFail(questionIndex, questions[questionIndex].a, incorrectClass, responsesClass);
+					}
+				
                     questionLI.addClass(incorrectClass);
-
                 }
 
                 // Toggle appropriate response (either for display now and / or on completion)
@@ -784,6 +734,10 @@
                 plugin.method.nextQuestion(this, {callback: plugin.config.animationCallbacks.nextQuestion});
             });
 
+			if(plugin.config.animationCallbacks.disappearOptions && typeof plugin.config.animationCallbacks.disappearOptions === 'function'){
+				plugin.config.animationCallbacks.disappearOptions();
+			}
+			
             // Accessibility (WAI-ARIA).
             var _qnid = $element.attr('id') + '-name';
             $quizName.attr('id', _qnid);
