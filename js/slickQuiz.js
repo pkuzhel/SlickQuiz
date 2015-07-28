@@ -40,6 +40,8 @@
                 completionResponseMessaging: false,
                 displayQuestionCount: true,   // Deprecate?
                 displayQuestionNumber: true,  // Deprecate?
+				showRemediationOnSuccess: true,
+				showRemediationOnFail: true,
                 animationCallbacks: { // only for the methods that have jQuery animations offering callback
                     setupQuiz: function () {},
                     startQuiz: function () {},
@@ -413,6 +415,45 @@
                 internal.method.turnKeyAndGo (key, options && options.callback ? options.callback : function () {});
             },
 
+			buildRemediation: function(questionIndexPr, answersPr, correctResponseClassPr, responsesClassPr){
+                var remidiation = [];
+                var singleRemidiation = '';
+                                
+                for (i in answersPr) {
+                    if (answersPr.hasOwnProperty(i)) {
+                        var answer = answersPr[i];
+                                     
+                        //console.log("answer " + answer.reason);
+
+                        if (!answer.correct) {
+                            if(answer.reason !== undefined || answer.reason != ''){
+                                singleRemidiation = '<i>Q. ' + answer.option + '</i><br />' + answer.reason;
+                                remidiation.push(singleRemidiation);
+                            }
+                        }else{
+                            if(answer.reason !== undefined || answer.reason != ''){
+                                singleRemidiation = '<b><i>Q. ' + answer.option + '</i></b><br />' + '<b><i>' + answer.reason + '<b><i>';
+                                remidiation.push(singleRemidiation);
+                            }
+                        }
+                    }
+                }
+
+                var optionHeader = '<i><h2 class="' + correctResponseClassPr + '">OK, now let\'s look at what options show:</h2></i>';
+                
+                var buttonQuestion = '#question' + questionIndexPr + ' > a.button.nextQuestion'/* + '.lastQuestion'*/;
+                                    
+                $(buttonQuestion).before(optionHeader);
+                                    
+                var remidiationResponseHTML = $('<ul class="' + responsesClassPr + '"></ul>');
+                for (i in remidiation) {
+                    remidiationResponseHTML.append('<li class="' + correctResponseClassPr + '">' + remidiation[i] + '</li>');
+                    $(buttonQuestion).before(remidiationResponseHTML);
+                }
+
+
+            },
+			
             // Validates the response selection(s), displays explanations & next question button
             checkAnswer: function(checkButton, options) {
                 var key, keyNotch, kN;
@@ -466,6 +507,9 @@
 
                 if (correctResponse) {
 				
+					if (plugin.config.showRemediationOnSuccess)
+						plugin.method.buildRemediation(questionIndex, questions[questionIndex].a, correctResponseClass, responsesClass);
+				
 					if(questions[questionIndex].onSuccess && typeof questions[questionIndex].onSuccess === 'function'){
 					
 						//"Firing callback"
@@ -475,6 +519,9 @@
 				
                     questionLI.addClass(correctClass);
                 } else {
+				
+					if (plugin.config.showRemediationOnFail)
+						plugin.method.buildRemediation(questionIndex, questions[questionIndex].a, incorrectClass, responsesClass);
 				
 					if(questions[questionIndex].onFail && typeof questions[questionIndex].onFail === 'function'){
 					
