@@ -706,6 +706,15 @@
                         score: score
                     }]);
                 }
+				
+				// SLIDE HOOK
+				$(anySlide.slide).trigger("end", {
+					element: {
+						type: "quiz",
+						score: score,
+						total: questionCount
+					}
+				});	
             },
 
             // Compares selected responses with true answers, returns true if they match exactly
